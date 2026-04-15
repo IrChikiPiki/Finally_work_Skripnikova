@@ -1,10 +1,14 @@
 from .pages.YouGile_pages import LoginYouGilePage, MainYouGilePage
 import allure
+import pytest
 
 
+@pytest.mark.ui
 @allure.feature("YouGile")
 @allure.story("Управление задачами")
-@allure.title("Создание, назначение исполнителя, перемещение и удаление задачи")
+@allure.title(
+    "Создание, назначение исполнителя, перемещение и удаление задачи"
+)
 @allure.severity(allure.severity_level.CRITICAL)
 def test_YouGile(driver_Chrome):
     """Тестирование YouGile: полный цикл работы с задачей"""
@@ -20,9 +24,10 @@ def test_YouGile(driver_Chrome):
     with allure.step("Проверка названия созданной задачи"):
         task_name = main_page.get_task_name()
         allure.attach(
-            f"Ожидаемое название: Тестовая задача\nФактическое название: {task_name}",
+            f"Ожидаемое название: Тестовая задача\n"
+            f"Фактическое название: {task_name}",
             name="Результат проверки",
-            attachment_type=allure.attachment_type.TEXT
+            attachment_type=allure.attachment_type.TEXT,
         )
         assert task_name == "Тестовая задача"
 
@@ -32,9 +37,10 @@ def test_YouGile(driver_Chrome):
     with allure.step("Проверка назначенного исполнителя"):
         performer_name = main_page.get_performer_name()
         allure.attach(
-            f"Ожидаемый исполнитель: Ир\nФактический исполнитель: {performer_name}",
+            f"Ожидаемый исполнитель: Ир\n"
+            f"Фактический исполнитель: {performer_name}",
             name="Результат проверки",
-            attachment_type=allure.attachment_type.TEXT
+            attachment_type=allure.attachment_type.TEXT,
         )
         assert performer_name == "Ир"
 

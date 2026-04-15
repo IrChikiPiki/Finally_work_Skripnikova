@@ -10,7 +10,7 @@ load_dotenv()
 base_url = "https://ru.yougile.com/api-v2/"
 login = os.getenv("login")
 password = os.getenv("password")
-companyId = "83922095-5c06-46b0-a192-0b50073ced49"
+companyId = os.getenv("companyId")
 api = YouGileAPI(base_url)
 
 keys = api.get_bearer_token(login, password, companyId)
@@ -20,6 +20,7 @@ else:
     key = api.create_bearer_token(login, password, companyId)
 
 
+@pytest.mark.api
 @allure.feature("Проекты YouGile")
 @allure.severity(allure.severity_level.BLOCKER)
 @allure.title("Позитивный тест создания проекта")
@@ -46,6 +47,7 @@ def test_create_project_positive():
         )
 
 
+@pytest.mark.api
 @allure.feature("Проекты YouGile")
 @allure.severity(allure.severity_level.NORMAL)
 @allure.title("Негативный тест создания проекта")
@@ -61,6 +63,7 @@ def test_create_project_negative():
         ), f"Ожидался 401, получен {new_project.status_code}"
 
 
+@pytest.mark.api
 @allure.feature("Проекты YouGile")
 @allure.severity(allure.severity_level.CRITICAL)
 @allure.title("Позитивный тест получения проекта")
@@ -105,6 +108,7 @@ def test_get_project_positive():
             pytest.skip("Проекты не созданы! Создайте новый.")
 
 
+@pytest.mark.api
 @allure.feature("Проекты YouGile")
 @allure.severity(allure.severity_level.NORMAL)
 @allure.title("Негативный тест получения проекта")
@@ -130,6 +134,7 @@ def test_get_project_negative():
         )
 
 
+@pytest.mark.api
 @allure.feature("Проекты YouGile")
 @allure.severity(allure.severity_level.CRITICAL)
 @allure.title("Позитивный тест изменения проекта")
@@ -188,6 +193,7 @@ def test_change_project_positive():
             pytest.skip("Проекты не созданы! Создайте новый.")
 
 
+@pytest.mark.api
 @allure.feature("Проекты YouGile")
 @allure.severity(allure.severity_level.NORMAL)
 @allure.title("Негативный тест изменения проекта")

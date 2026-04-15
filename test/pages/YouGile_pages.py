@@ -185,4 +185,3 @@ class MainYouGilePage:
                 (By.XPATH, "//div[@role='button']//div[text()='Удалить']")
             )
         ).click()
-
