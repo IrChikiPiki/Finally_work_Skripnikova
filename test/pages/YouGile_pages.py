@@ -11,9 +11,10 @@ load_dotenv()
 
 
 class LoginYouGilePage:
-    """Класс главной страницы магазина одежды"""
+    """Класс главной страницы YuoGile"""
 
-    def __init__(self, driver):
+    def __init__(self, driver) -> None:
+        """Метод инициализации класса"""
         self.driver = driver
         self.log = os.getenv("login")
         self.password = os.getenv("password")
@@ -22,7 +23,8 @@ class LoginYouGilePage:
         self.driver.maximize_window()
         self.actions = ActionChains(self.driver)
 
-    def login(self):
+    def login(self) -> None:
+        """Метод авторизации в системе"""
         self.wait.until(
             EC.presence_of_element_located(
                 (By.CSS_SELECTOR, "input[type='email']")
@@ -38,16 +40,18 @@ class LoginYouGilePage:
 
 
 class MainYouGilePage:
-    """Класс страницы с карточками товаров магазина одежды"""
+    """Класс основной страницы YouGile"""
 
-    def __init__(self, driver):
+    def __init__(self, driver) -> None:
+        """Метод инициализации класса"""
         self.driver = driver
         self.wait = WebDriverWait(driver, 15)
         self.driver.maximize_window()
         self.actions = ActionChains(self.driver)
         self.task_name = "Тестовая задача"
 
-    def create_task(self):
+    def create_task(self) -> None:
+        """Метод создание задачи"""
         # Добавление задач
         self.wait.until(
             EC.element_to_be_clickable(
@@ -74,7 +78,8 @@ class MainYouGilePage:
         # actions = ActionChains(self.driver)
         self.actions.send_keys(Keys.ENTER).perform()
 
-    def get_task_name(self):
+    def get_task_name(self) -> str:
+        """Метод получения имени созданной задачи"""
         created_task = self.wait.until(
             EC.presence_of_element_located(
                 (
@@ -86,7 +91,8 @@ class MainYouGilePage:
         )
         return created_task.text
 
-    def assign_performer(self):
+    def assign_performer(self) -> None:
+        """Метод назначения исполнителя задачи"""
         task = self.driver.find_element(
             By.CSS_SELECTOR, "[data-testid='board-task-card']"
         )
@@ -99,7 +105,8 @@ class MainYouGilePage:
         ).click()
         self.actions.send_keys(Keys.ESCAPE).perform()
 
-    def get_performer_name(self):
+    def get_performer_name(self) -> str:
+        """Метод получения имени исполнителя задачи"""
         task_with_executor = self.wait.until(
             EC.presence_of_element_located(
                 (
@@ -112,7 +119,8 @@ class MainYouGilePage:
         )
         return task_with_executor.text
 
-    def transfer_task(self):
+    def transfer_task(self) -> None:
+        """Метод переноса задачи"""
         task = self.driver.find_element(
             By.XPATH,
             f"//span[text()='{self.task_name}']"
@@ -165,7 +173,8 @@ class MainYouGilePage:
         ).click()
         sleep(2)
 
-    def delete_task(self):
+    def delete_task(self) -> None:
+        """Метод удаления задачи"""
         menu_button = self.wait.until(
             EC.element_to_be_clickable(
                 (

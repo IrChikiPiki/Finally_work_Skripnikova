@@ -10,7 +10,7 @@ import pytest
     "Создание, назначение исполнителя, перемещение и удаление задачи"
 )
 @allure.severity(allure.severity_level.CRITICAL)
-def test_YouGile(driver_Chrome):
+def test_YouGile(driver_Chrome) :
     """Тестирование YouGile: полный цикл работы с задачей"""
 
     with allure.step("Авторизация в системе"):
