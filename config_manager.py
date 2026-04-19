@@ -23,13 +23,16 @@ class ConfigManager:
         # Загрузка config.ini
         config_path = Path(__file__).parent / "config.ini"
         if config_path.exists():
-            self._config.read(config_path, encoding='utf-8')
+            self._config.read(config_path, encoding="utf-8")
 
         # Загрузка .env (для чувствительных данных)
         from dotenv import load_dotenv
+
         load_dotenv()
 
-    def get(self, section: str, key: str, fallback: Optional[str] = None) -> str:
+    def get(
+        self, section: str, key: str, fallback: Optional[str] = None
+    ) -> str:
         """Получение значения из конфига"""
         try:
             return self._config.get(section, key)
@@ -38,20 +41,22 @@ class ConfigManager:
                 return fallback
             raise
 
-    def get_env(self, key: str, fallback: Optional[str] = None) -> Optional[str]:
+    def get_env(
+        self, key: str, fallback: Optional[str] = None
+    ) -> Optional[str]:
         """Получение значения из переменных окружения"""
         return os.getenv(key, fallback)
 
     @property
-    def ui(self) -> 'UISection':
+    def ui(self) -> "UISection":
         return UISection(self)
 
     @property
-    def projects(self) -> 'ProjectsSection':
+    def projects(self) -> "ProjectsSection":
         return ProjectsSection(self)
 
     @property
-    def api(self) -> 'APISection':
+    def api(self) -> "APISection":
         return APISection(self)
 
 
@@ -61,15 +66,15 @@ class UISection:
 
     @property
     def task_name(self) -> str:
-        return self._config.get('ui', 'task_name', fallback="Тестовая задача")
+        return self._config.get("ui", "task_name", fallback="Тестовая задача")
 
     @property
     def performer_name(self) -> str:
-        return self._config.get('ui', 'performer_name', fallback="Ирина")
+        return self._config.get("ui", "performer_name", fallback="Ирина")
 
     @property
     def performer_short(self) -> str:
-        return self._config.get('ui', 'performer_short', fallback="Ир")
+        return self._config.get("ui", "performer_short", fallback="Ир")
 
 
 class ProjectsSection:
@@ -78,19 +83,27 @@ class ProjectsSection:
 
     @property
     def main_project(self) -> str:
-        return self._config.get('projects', 'main_project', fallback="FINALLY_PROJ")
+        return self._config.get(
+            "projects", "main_project", fallback="FINALLY_PROJ"
+        )
 
     @property
     def column_name(self) -> str:
-        return self._config.get('projects', 'column_name', fallback="SkripnikovaFINAL_2")
+        return self._config.get(
+            "projects", "column_name", fallback="SkripnikovaFINAL_2"
+        )
 
     @property
     def board_name(self) -> str:
-        return self._config.get('projects', 'board_name', fallback="ДОСКА ФИНАЛЬНАЯ")
+        return self._config.get(
+            "projects", "board_name", fallback="ДОСКА ФИНАЛЬНАЯ"
+        )
 
     @property
     def target_column(self) -> str:
-        return self._config.get('projects', 'target_column', fallback="SkripnikovaFINAL")
+        return self._config.get(
+            "projects", "target_column", fallback="SkripnikovaFINAL"
+        )
 
 
 class APISection:
@@ -99,7 +112,7 @@ class APISection:
 
     @property
     def user_id(self) -> str:
-        return self._config.get('api', 'user_id', fallback="")
+        return self._config.get("api", "user_id", fallback="")
 
 
 # Глобальный экземпляр

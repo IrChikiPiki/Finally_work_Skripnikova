@@ -102,7 +102,9 @@ class MainYouGilePage:
             By.CSS_SELECTOR, "[data-testid='board-user-sticker']"
         ).click()
         self.wait.until(
-            EC.element_to_be_clickable((By.XPATH, f"//span[text()='{config.ui.performer_name}']"))
+            EC.element_to_be_clickable(
+                (By.XPATH, f"//span[text()='{config.ui.performer_name}']")
+            )
         ).click()
         self.actions.send_keys(Keys.ESCAPE).perform()
 
