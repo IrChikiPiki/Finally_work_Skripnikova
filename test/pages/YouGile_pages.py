@@ -1,3 +1,4 @@
+from config_manager import config
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 import os
@@ -48,7 +49,7 @@ class MainYouGilePage:
         self.wait = WebDriverWait(driver, 15)
         self.driver.maximize_window()
         self.actions = ActionChains(self.driver)
-        self.task_name = "Тестовая задача"
+        self.task_name = config.ui.task_name
 
     def create_task(self) -> None:
         """Метод создание задачи"""
@@ -58,7 +59,7 @@ class MainYouGilePage:
                 (
                     By.XPATH,
                     "//div[contains(@class, 'truncate') "
-                    "and text()='FINALLY_PROJ']",
+                    f"and text()='{config.projects.main_project}']",
                 )
             )
         ).click()
@@ -66,7 +67,7 @@ class MainYouGilePage:
             EC.element_to_be_clickable(
                 (
                     By.XPATH,
-                    "//span[text()='SkripnikovaFINAL_2']/ancestor::"
+                    f"//span[text()='{config.projects.column_name}']/ancestor::"
                     "div[contains(@class, 'task-group-title-new')]"
                     "//span[text()='Добавить задачу']",
                 )
@@ -101,7 +102,7 @@ class MainYouGilePage:
             By.CSS_SELECTOR, "[data-testid='board-user-sticker']"
         ).click()
         self.wait.until(
-            EC.element_to_be_clickable((By.XPATH, "//span[text()='Ирина']"))
+            EC.element_to_be_clickable((By.XPATH, f"//span[text()='{config.ui.performer_name}']"))
         ).click()
         self.actions.send_keys(Keys.ESCAPE).perform()
 
@@ -149,7 +150,7 @@ class MainYouGilePage:
                 (
                     By.XPATH,
                     "//div[@class='ml-4 flex-1 text-no-wrap' "
-                    "and text()='FINALLY_PROJ']",
+                    f"and text()='{config.projects.main_project}']",
                 )
             )
         ).click()
@@ -158,7 +159,7 @@ class MainYouGilePage:
                 (
                     By.XPATH,
                     "//div[contains(@class, 'text-no-wrap') "
-                    "and text()='ДОСКА ФИНАЛЬНАЯ']",
+                    f"and text()='{config.projects.board_name}']",
                 )
             )
         ).click()
@@ -167,7 +168,7 @@ class MainYouGilePage:
                 (
                     By.XPATH,
                     "//div[contains(@class, 'text-no-wrap') "
-                    "and text()='SkripnikovaFINAL']",
+                    f"and text()='{config.projects.target_column}']",
                 )
             )
         ).click()

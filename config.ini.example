@@ -1,0 +1,13 @@
+[ui]
+task_name =
+performer_name =
+performer_short =
+
+[projects]
+main_project =
+column_name =
+board_name =
+target_column =
+
+[api]
+user_id =

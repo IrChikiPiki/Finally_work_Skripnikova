@@ -1,3 +1,4 @@
+from config_manager import config
 import requests
 from typing import Optional, Dict, List, Any
 
@@ -153,7 +154,7 @@ class YouGileAPI:
             "deleted": deleted,
             "title": title,
             "users": {
-                "1678c8b9-fb6b-4dee-bea8-e151d239542f": "admin",
+                config.api.user_id: "admin",
             },
         }
         headers: Dict[str, str] = {
