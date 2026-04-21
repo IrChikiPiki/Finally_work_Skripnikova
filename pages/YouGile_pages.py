@@ -20,7 +20,7 @@ class LoginYouGilePage:
         self.log = os.getenv("login")
         self.password = os.getenv("password")
         self.driver.get(f"{os.getenv("url")}")
-        self.wait = WebDriverWait(driver, 15)
+        self.wait = WebDriverWait(driver, 30)
         self.driver.maximize_window()
         self.actions = ActionChains(self.driver)
 

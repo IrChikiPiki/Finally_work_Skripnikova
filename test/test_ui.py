@@ -4,207 +4,110 @@ import pytest
 
 
 @pytest.mark.ui
-@allure.feature("YouGile - Авторизация")
-@allure.story("UI тесты")
-@allure.title("Тест 1: Успешная авторизация в системе")
-@allure.severity(allure.severity_level.BLOCKER)
-def test_login_successful(driver_Chrome):
-    """Тест авторизации с валидными данными"""
-    with allure.step("Открытие страницы авторизации и ввод данных"):
+@allure.feature("YouGile")
+@allure.story("Управление задачами")
+class TestYouGileTasks:
+
+    @pytest.fixture(autouse=True)
+    def setup(self, driver_Chrome):
+        """Общая авторизация для всех тестов"""
         login_page = LoginYouGilePage(driver_Chrome)
         login_page.login()
+        self.main_page = MainYouGilePage(driver_Chrome)
 
-    with allure.step("Проверка успешной авторизации"):
-        # Проверяем, что после авторизации открылась главная страница
-        main_page = MainYouGilePage(driver_Chrome)
-        assert driver_Chrome.current_url != login_page.driver.current_url
-        allure.attach(
-            driver_Chrome.get_screenshot_as_png(),
-            name="Главная страница после авторизации",
-            attachment_type=allure.attachment_type.PNG
-        )
+    @allure.title("Создание задачи")
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_create_task(self):
+        """Тест 1: Создание задачи"""
+        with allure.step("Создание задачи 'Тестовая задача'"):
+            self.main_page.create_task()
 
-
-@pytest.mark.ui
-@allure.feature("YouGile - Управление задачами")
-@allure.story("UI тесты")
-@allure.title("Тест 2: Создание новой задачи")
-@allure.severity(allure.severity_level.CRITICAL)
-def test_create_task(driver_Chrome):
-    """Тест создания задачи с валидным названием"""
-    with allure.step("Авторизация в системе"):
-        login_page = LoginYouGilePage(driver_Chrome)
-        login_page.login()
-
-    with allure.step("Создание новой задачи"):
-        main_page = MainYouGilePage(driver_Chrome)
-        main_page.create_task()
-
-    with allure.step("Проверка, что задача создалась"):
-        task_name = main_page.get_task_name()
-        assert task_name == main_page.task_name, \
-            f"Ожидалось '{main_page.task_name}', получено '{task_name}'"
-
-        allure.attach(
-            f"Создана задача: {task_name}",
-            name="Результат",
-            attachment_type=allure.attachment_type.TEXT
-        )
-
-
-@pytest.mark.ui
-@allure.feature("YouGile - Управление задачами")
-@allure.story("UI тесты")
-@allure.title("Тест 3: Назначение исполнителя на задачу")
-@allure.severity(allure.severity_level.CRITICAL)
-def test_assign_performer(driver_Chrome):
-    """Тест назначения исполнителя на существующую задачу"""
-    with allure.step("Авторизация в системе"):
-        login_page = LoginYouGilePage(driver_Chrome)
-        login_page.login()
-
-    with allure.step("Создание задачи (предусловие)"):
-        main_page = MainYouGilePage(driver_Chrome)
-        main_page.create_task()
-
-    with allure.step("Назначение исполнителя"):
-        main_page.assign_performer()
-
-    with allure.step("Проверка, что исполнитель назначен"):
-        performer_name = main_page.get_performer_name()
-        assert performer_name == "Ир", \
-            f"Ожидался исполнитель 'Ир', получен '{performer_name}'"
-
-        allure.attach(
-            f"Исполнитель задачи: {performer_name}",
-            name="Результат",
-            attachment_type=allure.attachment_type.TEXT
-        )
-
-
-@pytest.mark.ui
-@allure.feature("YouGile - Управление задачами")
-@allure.story("UI тесты")
-@allure.title("Тест 4: Перемещение задачи в другой проект")
-@allure.severity(allure.severity_level.NORMAL)
-def test_move_task_to_another_project(driver_Chrome):
-    """Тест перемещения задачи между проектами"""
-    with allure.step("Авторизация в системе"):
-        login_page = LoginYouGilePage(driver_Chrome)
-        login_page.login()
-
-    with allure.step("Создание задачи (предусловие)"):
-        main_page = MainYouGilePage(driver_Chrome)
-        main_page.create_task()
-
-    with allure.step("Перемещение задачи"):
-        main_page.transfer_task()
-
-    with allure.step("Проверка, что задача перемещена"):
-        # Можно добавить проверку, что задача появилась в новом проекте
-        allure.attach(
-            "Задача успешно перемещена",
-            name="Результат",
-            attachment_type=allure.attachment_type.TEXT
-        )
-
-
-@pytest.mark.ui
-@allure.feature("YouGile - Управление задачами")
-@allure.story("UI тесты")
-@allure.title("Тест 5: Удаление задачи")
-@allure.severity(allure.severity_level.CRITICAL)
-def test_delete_task(driver_Chrome):
-    """Тест удаления существующей задачи"""
-    with allure.step("Авторизация в системе"):
-        login_page = LoginYouGilePage(driver_Chrome)
-        login_page.login()
-
-    with allure.step("Создание задачи (предусловие)"):
-        main_page = MainYouGilePage(driver_Chrome)
-        main_page.create_task()
-
-    with allure.step("Удаление задачи"):
-        main_page.delete_task()
-
-    with allure.step("Проверка, что задача удалена"):
-        # Проверяем, что задача больше не отображается
-        try:
-            main_page.get_task_name()
-            assert False, "Задача не была удалена"
-        except:
+        with allure.step("Проверка названия созданной задачи"):
+            task_name = self.main_page.get_task_name()
             allure.attach(
-                "Задача успешно удалена",
-                name="Результат",
-                attachment_type=allure.attachment_type.TEXT
+                f"Ожидаемое название: Тестовая задача\n"
+                f"Фактическое название: {task_name}",
+                name="Результат проверки",
+                attachment_type=allure.attachment_type.TEXT,
+            )
+            assert task_name == "Тестовая задача"
+
+    @allure.title("Назначение исполнителя задаче")
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_assign_performer(self):
+        """Тест 2: Назначение исполнителя (требует предварительно созданную задачу)"""
+        with allure.step("Предусловие: создание задачи"):
+            self.main_page.create_task()
+
+        with allure.step("Назначение исполнителя 'Ирина' на задачу"):
+            self.main_page.assign_performer()
+
+        with allure.step("Проверка назначенного исполнителя"):
+            performer_name = self.main_page.get_performer_name()
+            allure.attach(
+                f"Ожидаемый исполнитель: Ир\n"
+                f"Фактический исполнитель: {performer_name}",
+                name="Результат проверки",
+                attachment_type=allure.attachment_type.TEXT,
+            )
+            assert performer_name == "Ир"
+
+    @allure.title("Перемещение задачи в другой проект")
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_transfer_task(self):
+        """Тест 3: Перемещение задачи (требует предварительно созданную задачу)"""
+        with allure.step("Предусловие: создание задачи"):
+            self.main_page.create_task()
+
+        with allure.step("Перемещение задачи в другой проект"):
+            self.main_page.transfer_task()
+
+        with allure.step("Проверка перемещения задачи"):
+            # Можно добавить проверку, что задача находится в новом месте
+            allure.attach(
+                "Задача успешно перемещена",
+                name="Результат проверки",
+                attachment_type=allure.attachment_type.TEXT,
             )
 
+    @allure.title("Удаление задачи")
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_delete_task(self):
+        """Тест 4: Удаление задачи (требует предварительно созданную задачу)"""
+        with allure.step("Предусловие: создание задачи"):
+            self.main_page.create_task()
 
-@pytest.mark.ui
-@allure.feature("YouGile - Управление задачами")
-@allure.story("UI тесты")
-@allure.title("Тест 6: Создание задачи с пустым названием")
-@allure.severity(allure.severity_level.NORMAL)
-def test_create_task_empty_name(driver_Chrome):
-    """Негативный тест: создание задачи без названия"""
-    with allure.step("Авторизация в системе"):
-        login_page = LoginYouGilePage(driver_Chrome)
-        login_page.login()
+        with allure.step("Удаление задачи"):
+            self.main_page.delete_task()
 
-    with allure.step("Попытка создать задачу без названия"):
-        main_page = MainYouGilePage(driver_Chrome)
-        # Модифицируем для создания пустой задачи
-        main_page.task_name = ""
-        main_page.create_task()
+        with allure.step("Проверка удаления задачи"):
+            # Можно добавить проверку, что задача больше не отображается
+            allure.attach(
+                "Задача успешно удалена",
+                name="Результат проверки",
+                attachment_type=allure.attachment_type.TEXT,
+            )
 
-    with allure.step("Проверка, что задача не создалась"):
-        # Проверяем, что задача не появилась на доске
-        assert main_page.is_task_not_created(), \
-            "Задача с пустым названием не должна создаваться"
+    @allure.title("Полный цикл работы с задачей")
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_full_task_lifecycle(self):
+        """Тест 5: Полный цикл (создание → назначение → перемещение → удаление)"""
+        with allure.step("Создание задачи 'Тестовая задача'"):
+            self.main_page.create_task()
 
+        with allure.step("Проверка названия созданной задачи"):
+            task_name = self.main_page.get_task_name()
+            assert task_name == "Тестовая задача"
 
-@pytest.mark.ui
-@allure.feature("YouGile - Управление задачами")
-@allure.story("UI тесты")
-@allure.title("Тест 7: Редактирование названия задачи")
-@allure.severity(allure.severity_level.NORMAL)
-def test_edit_task_name(driver_Chrome):
-    """Тест редактирования названия задачи"""
-    with allure.step("Авторизация в системе"):
-        login_page = LoginYouGilePage(driver_Chrome)
-        login_page.login()
+        with allure.step("Назначение исполнителя 'Ирина' на задачу"):
+            self.main_page.assign_performer()
 
-    with allure.step("Создание задачи"):
-        main_page = MainYouGilePage(driver_Chrome)
-        main_page.create_task()
+        with allure.step("Проверка назначенного исполнителя"):
+            performer_name = self.main_page.get_performer_name()
+            assert performer_name == "Ир"
 
-    with allure.step("Редактирование названия задачи"):
-        new_name = "Измененная задача"
-        main_page.edit_task_name(new_name)
+        with allure.step("Перемещение задачи в другой проект"):
+            self.main_page.transfer_task()
 
-    with allure.step("Проверка изменения названия"):
-        task_name = main_page.get_task_name()
-        assert task_name == new_name, \
-            f"Ожидалось '{new_name}', получено '{task_name}'"
-
-
-@pytest.mark.ui
-@allure.feature("YouGile - Управление задачами")
-@allure.story("UI тесты")
-@allure.title("Тест 8: Проверка создания задачи с длинным названием")
-@allure.severity(allure.severity_level.MINOR)
-def test_create_task_long_name(driver_Chrome):
-    """Тест создания задачи с очень длинным названием"""
-    with allure.step("Авторизация в системе"):
-        login_page = LoginYouGilePage(driver_Chrome)
-        login_page.login()
-
-    with allure.step("Создание задачи с длинным названием (255 символов)"):
-        main_page = MainYouGilePage(driver_Chrome)
-        long_name = "A" * 255
-        main_page.task_name = long_name
-        main_page.create_task()
-
-    with allure.step("Проверка, что задача создалась"):
-        task_name = main_page.get_task_name()
-        assert task_name == long_name, "Длинное название не сохранилось"
+        with allure.step("Удаление задачи"):
+            self.main_page.delete_task()

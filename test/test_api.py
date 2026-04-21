@@ -2,7 +2,7 @@ import allure
 import os
 import pytest
 
-from test.pages.yougileAPI_allure import YouGileAPI
+from pages.yougileAPI_allure import YouGileAPI
 from dotenv import load_dotenv
 
 load_dotenv()
