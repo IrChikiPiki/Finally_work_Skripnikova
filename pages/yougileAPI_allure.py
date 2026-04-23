@@ -153,9 +153,6 @@ class YouGileAPI:
         payload: Dict[str, Any] = {
             "deleted": deleted,
             "title": title,
-            "users": {
-                config.api.user_id: "admin",
-            },
         }
         headers: Dict[str, str] = {
             "Content-Type": "application/json",

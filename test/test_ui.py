@@ -1,3 +1,5 @@
+from allure_commons.utils import uuid4
+
 from pages.YouGile_pages import LoginYouGilePage, MainYouGilePage
 import allure
 import pytest
@@ -35,22 +37,28 @@ class TestYouGileTasks:
     @allure.title("Назначение исполнителя задаче")
     @allure.severity(allure.severity_level.CRITICAL)
     def test_assign_performer(self):
-        """Тест 2: Назначение исполнителя (требует предварительно созданную задачу)"""
+        """Тест 2: Назначение исполнителя для конкретной созданной задачи."""
+        task_title = f"Тестовая задача {uuid4().hex[:8]}"
+
         with allure.step("Предусловие: создание задачи"):
-            self.main_page.create_task()
+            created_task_title = self.main_page.create_task(task_title=task_title)
 
         with allure.step("Назначение исполнителя 'Ирина' на задачу"):
-            self.main_page.assign_performer()
+            self.main_page.assign_performer(task_title=created_task_title)
 
         with allure.step("Проверка назначенного исполнителя"):
-            performer_name = self.main_page.get_performer_name()
+            performer_name = self.main_page.get_performer_name(
+                task_title=created_task_title
+            )
             allure.attach(
                 f"Ожидаемый исполнитель: Ир\n"
                 f"Фактический исполнитель: {performer_name}",
                 name="Результат проверки",
                 attachment_type=allure.attachment_type.TEXT,
             )
-            assert performer_name == "Ир"
+            assert performer_name == "Ир", (
+                "Исполнитель не назначился на созданную карточку задачи."
+            )
 
     @allure.title("Перемещение задачи в другой проект")
     @allure.severity(allure.severity_level.NORMAL)
@@ -92,22 +100,30 @@ class TestYouGileTasks:
     @allure.severity(allure.severity_level.CRITICAL)
     def test_full_task_lifecycle(self):
         """Тест 5: Полный цикл (создание → назначение → перемещение → удаление)"""
-        with allure.step("Создание задачи 'Тестовая задача'"):
-            self.main_page.create_task()
+        task_title = f"Тестовая задача {uuid4().hex[:8]}"
+
+        with allure.step("Создание задачи с уникальным названием"):
+            created_task_title = self.main_page.create_task(task_title=task_title)
 
         with allure.step("Проверка названия созданной задачи"):
-            task_name = self.main_page.get_task_name()
-            assert task_name == "Тестовая задача"
+            task_name = self.main_page.get_task_name(task_title=created_task_title)
+            assert task_name == created_task_title, (
+                "Созданная задача не найдена по ожидаемому названию."
+            )
 
         with allure.step("Назначение исполнителя 'Ирина' на задачу"):
-            self.main_page.assign_performer()
+            self.main_page.assign_performer(task_title=created_task_title)
 
         with allure.step("Проверка назначенного исполнителя"):
-            performer_name = self.main_page.get_performer_name()
-            assert performer_name == "Ир"
+            performer_name = self.main_page.get_performer_name(
+                task_title=created_task_title
+            )
+            assert performer_name == "Ир", (
+                "Исполнитель не назначился на созданную карточку задачи."
+            )
 
         with allure.step("Перемещение задачи в другой проект"):
-            self.main_page.transfer_task()
+            self.main_page.transfer_task(task_title=created_task_title)
 
         with allure.step("Удаление задачи"):
-            self.main_page.delete_task()
+            self.main_page.delete_task(task_title=created_task_title)

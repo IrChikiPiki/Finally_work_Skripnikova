@@ -51,10 +51,17 @@ class MainYouGilePage:
         self.actions = ActionChains(self.driver)
         self.task_name = config.ui.task_name
 
-    def create_task(self) -> None:
-        """Метод создание задачи"""
+    def create_task(self, task_title: str) -> str:
+        """Создает задачу и возвращает фактическое имя созданной карточки.
+        Args:
+            task_title: Название создаваемой задачи.
+        Returns:
+            str: Название созданной задачи.
+        """
+        target_task_title: str = task_title
+
         # Добавление задач
-        self.wait.until(
+        button = (self.wait.until(
             EC.element_to_be_clickable(
                 (
                     By.XPATH,
@@ -62,8 +69,9 @@ class MainYouGilePage:
                     f"and text()='{config.projects.main_project}']",
                 )
             )
-        ).click()
-        self.wait.until(
+        ))
+        button.click()
+        button_2 = (self.wait.until(
             EC.element_to_be_clickable(
                 (
                     By.XPATH,
@@ -72,67 +80,105 @@ class MainYouGilePage:
                     "//span[text()='Добавить задачу']",
                 )
             )
-        ).click()
+        ))
+        button_2.click()
         self.driver.find_element(
             By.XPATH, "//textarea[@placeholder='Введите название задачи…']"
-        ).send_keys(f"{self.task_name}")
-        # actions = ActionChains(self.driver)
+        ).send_keys(target_task_title)
         self.actions.send_keys(Keys.ENTER).perform()
+        return target_task_title
 
-    def get_task_name(self) -> str:
-        """Метод получения имени созданной задачи"""
+    def get_task_name(self, task_title: str | None = None) -> str:
+        """Возвращает название задачи по ожидаемому имени.
+
+        Args:
+            task_title: Название задачи для поиска. Если не передано,
+                используется значение из конфигурации.
+
+        Returns:
+            str: Текст заголовка найденной задачи.
+        """
+        target_task_title: str = task_title or self.task_name
         created_task = self.wait.until(
             EC.presence_of_element_located(
                 (
                     By.XPATH,
                     f"//div[@data-testid='board-task-card']"
-                    f"//span[text()='{self.task_name}']",
+                    f"//span[text()='{target_task_title}']",
                 )
             )
         )
         return created_task.text
 
-    def assign_performer(self) -> None:
-        """Метод назначения исполнителя задачи"""
-        task = self.driver.find_element(
-            By.CSS_SELECTOR, "[data-testid='board-task-card']"
+    def assign_performer(self, task_title: str | None = None) -> None:
+        """Назначает исполнителя задаче с указанным названием.
+
+        Args:
+            task_title: Название задачи, в которую нужно назначить исполнителя.
+                Если не передано, используется значение из конфигурации.
+        """
+        target_task_title: str = task_title or self.task_name
+        task = self.wait.until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    "//div[@data-testid='board-task-card']"
+                    f"[.//span[text()='{target_task_title}']]",
+                )
+            )
         )
         self.actions.move_to_element(task).perform()
-        self.driver.find_element(
-            By.CSS_SELECTOR, "[data-testid='board-user-sticker']"
-        ).click()
-        self.wait.until(
+        task.find_element(By.CSS_SELECTOR, "[data-testid='board-user-sticker']").click()
+        performer_option = (self.wait.until(
             EC.element_to_be_clickable(
                 (By.XPATH, f"//span[text()='{config.ui.performer_name}']")
             )
-        ).click()
+        ))
+        performer_option.click()
         self.actions.send_keys(Keys.ESCAPE).perform()
 
-    def get_performer_name(self) -> str:
-        """Метод получения имени исполнителя задачи"""
+    def get_performer_name(self, task_title: str | None = None) -> str:
+        """Возвращает отображаемое имя исполнителя у выбранной задачи.
+
+        Args:
+            task_title: Название задачи, у которой нужно прочитать исполнителя.
+                Если не передано, используется значение из конфигурации.
+
+        Returns:
+            str: Отображаемое сокращенное имя исполнителя на карточке.
+        """
+        target_task_title: str = task_title or self.task_name
         task_with_executor = self.wait.until(
             EC.presence_of_element_located(
                 (
                     By.XPATH,
                     f"//div[@data-testid='board-task-card']"
-                    f"[.//span[text()='{self.task_name}']]"
+                    f"[.//span[text()='{target_task_title}']]"
                     f"//div[@class='user-avatar sticker-item-icon']",
                 )
             )
         )
         return task_with_executor.text
 
-    def transfer_task(self) -> None:
-        """Метод переноса задачи"""
-        task = self.driver.find_element(
-            By.XPATH,
-            f"//span[text()='{self.task_name}']"
-            f"/ancestor::div[@data-testid='board-task-card']",
+    def transfer_task(self, task_title: str | None = None) -> None:
+        """Перемещает выбранную задачу в целевую колонку.
+
+        Args:
+            task_title: Название задачи, которую нужно переместить.
+                Если не передано, используется значение из конфигурации.
+        """
+        target_task_title: str = task_title or self.task_name
+        task = self.wait.until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    f"//span[text()='{target_task_title}']"
+                    f"/ancestor::div[@data-testid='board-task-card']",
+                )
+            )
         )
         self.actions.move_to_element(task).perform()
-        self.driver.find_element(
-            By.CSS_SELECTOR, "[data-testid='board-task-menu']"
-        ).click()
+        task.find_element(By.CSS_SELECTOR, "[data-testid='board-task-menu']").click()
         self.wait.until(
             EC.element_to_be_clickable(
                 (
@@ -176,14 +222,20 @@ class MainYouGilePage:
         ).click()
         sleep(2)
 
-    def delete_task(self) -> None:
-        """Метод удаления задачи"""
+    def delete_task(self, task_title: str | None = None) -> None:
+        """Удаляет задачу по указанному названию.
+
+        Args:
+            task_title: Название задачи для удаления.
+                Если не передано, используется значение из конфигурации.
+        """
+        target_task_title: str = task_title or self.task_name
         menu_button = self.wait.until(
             EC.element_to_be_clickable(
                 (
                     By.XPATH,
-                    "//div[@data-testid='tw-task-container']"
-                    "[.//span[text()='Тестовая задача']]"
+                    "//div[@data-testid='board-task-card']"
+                    f"[.//span[text()='{target_task_title}']]"
                     "//div[@data-testid='board-task-menu']",
                 )
             )
