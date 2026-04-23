@@ -1,3 +1,4 @@
+from config_manager import config
 import requests
 from typing import Optional, Dict, List, Any
 
@@ -152,9 +153,6 @@ class YouGileAPI:
         payload: Dict[str, Any] = {
             "deleted": deleted,
             "title": title,
-            "users": {
-                "1678c8b9-fb6b-4dee-bea8-e151d239542f": "admin",
-            },
         }
         headers: Dict[str, str] = {
             "Content-Type": "application/json",
